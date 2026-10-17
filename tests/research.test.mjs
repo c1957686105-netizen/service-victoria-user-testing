@@ -16,5 +16,6 @@ test('evidence exports preserve independent outcome, assistance, recording refus
 test('legacy records export without inventing protocol or recording consent',()=>{
  const text=reportMarkdown({code:'OLD',version:'1',status:'completed',createdAt:'2026-10-17',tasks:[],notes:[],background:{},reflection:{}});
  assert.ok(text.includes('Not recorded (legacy session)'));
- assert.ok(text.includes('Consent: Not recorded'));
+ assert.ok(!text.includes('## Recording'));
+ assert.equal(defaultProtocol.recordingMethod,undefined);
 });
