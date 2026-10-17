@@ -4,7 +4,7 @@
 
 ## 现场怎么用
 
-1. 研究者在自己的设备上登录并打开网站，确认网络可用。网站保持私有，参与者使用这台设备操作。
+1. 研究者在自己的设备上打开网站，无需登录。参与者使用这台设备操作；不要用无痕模式。
 2. 切换英文／中文测试说明；App 原型保留英文。向参与者介绍匿名操作记录，参与者自行勾选同意。
 3. 填写三道背景题，阅读任务后点击开始。建议每次保持同一设备、窗口尺寸和输入方式。
 4. 参与者依次完成查找租约信息、无结果恢复、寻找机构帮助三个任务。后两项起点由测试设置，分析时不要当作自然操作路径。
@@ -24,16 +24,44 @@ M01 首页 → M02 主题服务 → M03 搜索与建议 → M04 搜索结果 →
 - 总时间：任务开始至结束的经过时间，包含暂停、切换标签和中断。
 - 可见操作时间：只累计任务页可见且未暂停时的时间。不等同于注意力，也不能单独证明成功。
 - 用户自报完成与研究者判定分开。刷新后可恢复未完成场次，进行中的任务恢复为暂停状态。
-- 记录先存本机浏览器，再同步私有数据库。显示连接失败时保留本机副本并下载 JSON。清理浏览器数据会丢失尚未同步的记录。
-- JSON 包含完整场次、问卷及笔记；CSV 为逐事件时间线。研究者页可按场次或全部导出。删除功能会同时删除本机与已保存记录。
+- 记录仅保存在当前网址、当前浏览器的 localStorage，不上传服务器。不同设备、浏览器，以及本地预览与 GitHub Pages 之间不会共享记录。清理浏览器数据会删除记录，每位参与者结束后务必下载 JSON 备份。
+- JSON 包含完整场次、问卷及笔记；CSV 为逐事件时间线。研究者页可按场次或全部导出。删除功能只删除当前浏览器的记录，已下载文件需另行处理。
 - 网页不录音、不摄像、不录屏。笔记和回答不要填写姓名、联系方式或真实身份／租约细节。
 - 当前版本的技术检查与模拟流程不是参与者研究，不应写成真实测试结果。
 
-## 开发与验证
+## 最简单的发布方式：GitHub Pages
 
-运行 `npm run dev`；构建使用 Sites 提供的构建流程。数据库迁移位于 drizzle/，生产部署时应用。身份验证按登录用户隔离记录。
+这是纯静态版，运行不需要数据库、登录、令牌或云端记录服务。`docs/` 是已构建的发布文件，不含参与者数据。原有服务端文件保留供历史参考，当前入口和构建不使用它们。
 
-检查：`node --test tests/*.mjs`；`npx tsc --noEmit`。本地浏览器走查覆盖恢复、任务路径、问卷、后台查看与保存。生产数据库不包含本地模拟测试记录。
+首次发布：
+
+1. 将本次修改及 `docs/` 提交并推送到 GitHub。
+2. 仓库 Settings → Pages → Source 选择 **Deploy from a branch**。
+3. Branch 选择 **main**，目录选择 **/docs**，点击 Save。
+4. 等 GitHub Pages 部署成功后访问：https://c1957686105-netizen.github.io/service-victoria-user-testing/
+
+参考：https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+
+以后改完代码，在项目目录运行：
+
+```sh
+npm run build
+git add app lib public tests package.json index.html main.tsx vite.static.config.ts docs README.md
+git commit -m "Update static study website"
+git push github main
+```
+
+`npm run build` 会重新生成 docs，所以每次修改后都要构建并一并提交。不要手改 docs 内的压缩文件。不要把参与者备份放入 docs 或提交到仓库。
+
+## 本地预览与验证
+
+已安装依赖时运行 `npm run dev`，打开终端显示的地址。首次克隆需先运行 `npm ci`。使用 Node 22.13 或更高版本；测试命令建议 Node 24。
+
+`npm run build` 生成 docs；`npm start` 预览构建结果。不要双击 index.html，浏览器应通过本地网址或 GitHub Pages 访问。
+
+运行 `npm test` 检查研究逻辑；`npx tsc --noEmit --incremental false` 检查类型。`node --test tests/static.test.mjs` 检查静态构建的子目录资源与无云端接口依赖（先 build）。
+
+本次已通过构建、类型和自动检查。新版浏览器操作验收此前因自动审批额度限制未能执行；正式测试前请自行试跑一场，检查三项任务、刷新恢复与 JSON/CSV 下载。试跑数据不能写成研究结果。
 
 ## 测试网页 2.0 / 原型 V3.1 更新
 
