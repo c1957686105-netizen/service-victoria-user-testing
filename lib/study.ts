@@ -1,4 +1,5 @@
-export const VERSION = "mobile-midfi-v3-web-study-1.0";
+import type {Protocol,Recording,Observation,Iteration} from "./research";
+export const VERSION = "mobile-midfi-v3.1-web-study-2.0";
 export type Lang = "en" | "zh";
 export type Screen = "home" | "topic" | "search" | "results" | "overview" | "help";
 export const screenIds: Record<Screen,string> = {home:"M01",topic:"M02",search:"M03",results:"M04",overview:"M05",help:"M06"};
@@ -17,7 +18,7 @@ export type AppState = {screen:Screen;query:string;topic:string;service:string;o
 export const initialApp = (task=0):AppState => ({screen:task===1?"results":task===2?"overview":"home",query:task===1?"rental agreement information":"",topic:"All topics",service:task===2?"agreements":"",origin:"results",searchOrigin:"home",helpOrigin:"home",helpService:"",forcedNoResults:task===1,allTopics:false});
 export type StudyEvent = {seq:number;at:string;type:string;task:string|null;screen:string|null;elapsedMs:number|null;visibleMs:number|null;details:Record<string,unknown>};
 export type TaskRecord = {id:string;startedAt:string;endedAt?:string;visibleMs:number;outcome?:"completed"|"gave_up";ease?:number;answer?:string;firstAction?:string;assistance:boolean;assessment?:string;assessmentNote?:string;path:string[]};
-export type Session = {id:string;code:string;revision:number;version:string;createdAt:string;updatedAt:string;completedAt?:string;status:"in_progress"|"completed"|"withdrawn";lang:Lang;consent:{at:string;version:string};background:Record<string,string>;device:Record<string,unknown>;step:"background"|"brief"|"task"|"taskReview"|"reflection"|"done";taskIndex:number;app:AppState;paused:boolean;tasks:TaskRecord[];events:StudyEvent[];reflection:Record<string,string>;notes:{at:string;task:string|null;text:string;assistance:boolean}[]};
+export type Session = {id:string;code:string;revision:number;version:string;createdAt:string;updatedAt:string;completedAt?:string;status:"in_progress"|"completed"|"withdrawn";lang:Lang;consent:{at:string;version:string};background:Record<string,string>;device:Record<string,unknown>;step:"background"|"brief"|"task"|"taskReview"|"reflection"|"done";taskIndex:number;app:AppState;paused:boolean;tasks:TaskRecord[];events:StudyEvent[];reflection:Record<string,string>;notes:Observation[];protocol?:Protocol;recording?:Recording;iterations?:Iteration[]};
 export function searchServices(query:string,topic="All topics") {
   if(topic!=="All topics" && topic!=="Housing & renting") return [];
   const words=query.toLowerCase().trim().split(/\s+/).filter(x=>x.length>1 && !["a","an","the","my","for","about","information","on","in","to","and","i","need","want","find"].includes(x));
